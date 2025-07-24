@@ -1,0 +1,43 @@
+﻿
+<div>
+	<h2 class="text-center">Welcome @ViewBag.name</h2>
+
+	<div class="row justify-content-center">
+
+		<div class="col-md-4 mb-4">
+
+			<div class="card" style="width:22rem;height:12rem;background-color:black">
+				<div class="card-body text-white text-center">
+					<h5 class="card-title">Manage Docters</h5>
+					<p class="card-text">Click below to manage doctors in the system</p>
+					<a asp-action="Manage_doctors" asp-controller="AdminHome" class="btn btn-info">Manage Doctors</a>
+				</div>
+			</div>
+			</div>
+
+			<div class="col-md-4 mb-4">
+			<div class="card" style="width:22rem;height:12rem;background-color:black">
+				<div class="card-body text-white text-center">
+					<h5 class="card-title">Manage Patient</h5>
+					<p class="card-text">Click below to manage patients in the system</p>
+					<a asp-action="Manage_patients" asp-controller="AdminHome" class="btn btn-info">Manage Patients</a>
+				</div>
+			</div>
+	       </div>
+
+		   <div class="col-md-4 mb-4">
+			<div class="card" style="width:22rem;height:12rem;background-color:black">
+				<div class="card-body text-white text-center">
+					<h5 class="card-title">Manage Appointments</h5>
+					<p class="card-text">Click below to manage the appointments</p>
+					<a asp-action="Appointment_Load" asp-controller="AppointmentHome" class="btn btn-info">Manage Appointments</a>
+				</div>
+			</div>
+				</div>
+
+
+		</div>
+
+	</div>
+	
+</div>

@@ -1,0 +1,29 @@
+﻿@model Hospital_Management_MVC.Models.AdminApntView
+
+@{
+	ViewData["Title"] = "Appointment Admin";
+}
+<div>
+	<h2 class="text-center">Welcome @ViewBag.name</h2>
+</div>
+
+<form asp-action="AppointmentAdmin" method="post">
+	<div>
+		<label>Select Patient</label>
+		<select asp-for="selectedPatintid" asp-items="@(new SelectList(Model.Patients, "Id", "Name"))"></select>
+	</div>
+	<div>
+		<label>Select Doctor</label>
+		<select asp-for="selectedDocterid" asp-items="@(new SelectList(Model.Docters,"Id","Name"))"></select>
+	</div>
+	<div>
+		<label>
+			Select the date of appointment
+		</label>
+		<input asp-for="Date" type="date" class="form-control" />
+	</div>
+	
+</form>
+
+
+

@@ -1,0 +1,39 @@
+﻿@model Hospital_Management_MVC.Models.loginModel
+@{
+	ViewData["Title"] = "Login";
+}
+<style>
+	.full-background {
+		background-image: url(https://media.istockphoto.com/id/1477441021/photo/doctor-thumb-or-fingerprint-scan-of-dna-healthcare-data-or-medical-profile-on-interactive.jpg?s=612x612&w=0&k=20&c=oy003XRQO5J03IJypTJfrBcY3w6_CFLAlNehtKz05sg=);
+		background-size: cover;
+		background-position: center;
+		min-height:100vh;
+		display:flex;
+	}
+</style>
+<div class="full-background d-flex justify-content-center align-items-center shadow-sm">
+	<div class="shadow-sm">
+@if(ViewBag.message!=null)
+{
+	<div class="text-center text-danger">
+	      <h3>@ViewBag.message</h3>
+	</div>
+}
+
+<form asp-action="Login_click" asp-controller="Login" method="post">
+	<div class="form-group">
+		<label asp-for="Username" class="form-label"></label>
+		<input asp-for="Username" class="form-control"/>
+		<span asp-validation-for="Username" class="text-danger"></span>
+	</div>
+	<div class="form-group">
+		<label asp-for="Password"class="form-label"></label>
+		<input asp-for="Password" class="form-control" type="password"/>
+		<span asp-validation-for="Password"class="text-danger"></span>
+	</div>
+	<div class="text-center">
+		<input type="submit" class="btn btn-warning mt-4" value="Login"/>
+	</div>
+</form>
+	</div>
+</div>
