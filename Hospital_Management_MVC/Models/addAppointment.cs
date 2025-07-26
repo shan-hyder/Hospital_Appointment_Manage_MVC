@@ -8,7 +8,7 @@ namespace Hospital_Management_MVC.Models
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
         [Required(ErrorMessage = "Please choose the date")]
-        public DateOnly Date { get; set; }
+        public DateTime Date { get; set; }
         [Required(ErrorMessage = "Select Time Slot")]
         public string TimeSlot { get; set; }
         public string Status { get; set; }

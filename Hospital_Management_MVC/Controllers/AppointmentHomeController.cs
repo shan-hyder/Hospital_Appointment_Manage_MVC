@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Hospital_Management_MVC.Models;
+using System.Linq;
 
 namespace Hospital_Management_MVC.Controllers
 {
@@ -36,15 +37,19 @@ namespace Hospital_Management_MVC.Controllers
             {
                 Docters = dbconect.GetAllDoctors(),
                 Patients = dbconect.GetAllPatients(),
+                BookedSlots = new List<string>()
             };
+            if (TempData["message"]!=null)
+            {
+                ViewBag.message = TempData["message"];
+            }
             return View(model);
         }
         [HttpPost]
         public IActionResult AppointmentAdmin(AdminApntView apntview)
         {
-            if(ModelState.IsValid)
-            {
-                var model = new addAppointment
+           
+             var model = new addAppointment
                 {
                    PatientId=apntview.selectedPatintid,
                    DoctorId=apntview.selectedDocterid,
@@ -56,14 +61,34 @@ namespace Hospital_Management_MVC.Controllers
                 TempData["message"] = "Appointment Added Succcessfully";
                 ModelState.Clear();
                 apntview = new AdminApntView();
-            }
-            else
-            {
-                TempData["message"] = "Please fill all the fields correctly";
-            }
+            
+        
             apntview.Docters = dbconect.GetAllDoctors();
             apntview.Patients = dbconect.GetAllPatients();
+            apntview.BookedSlots = new List<string>();
             return View(apntview);
+        }
+        [HttpPost]
+        public IActionResult BookedSlots(AdminApntView apntmnt)
+        {
+            if(apntmnt.selectedDocterid!=0 && apntmnt.Date!=default)
+            {
+                DateTime date = apntmnt.Date;
+                int doctorId = apntmnt.selectedDocterid;
+                var bookedSlots = dbconect.GetBookedSlots(doctorId,date);
+
+                ViewBag.doctorid = doctorId;
+                ViewBag.date = date;
+                apntmnt.Docters = dbconect.GetAllDoctors();
+                apntmnt.Patients = dbconect.GetAllPatients();
+                apntmnt.BookedSlots = bookedSlots;
+                ViewBag.patientid= apntmnt.selectedPatintid;
+
+                return View("AppointmentAdmin",apntmnt);
+            }
+            TempData["message"] = "please choose doctor and patient to see available slots";
+            return RedirectToAction("AppointmentAdmin");
+
         }
     }
 }

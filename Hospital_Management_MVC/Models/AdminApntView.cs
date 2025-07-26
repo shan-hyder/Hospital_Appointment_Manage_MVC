@@ -15,7 +15,7 @@ namespace Hospital_Management_MVC.Models
         [Required(ErrorMessage ="Please select a time slot")]
         public string Timeslot { get; set; }
         public string Status { get; set; }
-
+        public List<string> BookedSlots { get; set; } = new List<string>();
 
     }
 }

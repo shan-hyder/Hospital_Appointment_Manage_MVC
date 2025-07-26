@@ -215,7 +215,6 @@ namespace Hospital_Management_MVC.Models
                     return "Failed to book appointment";
                 }
                 
-
             }
             catch(Exception ex)
             {
@@ -287,10 +286,22 @@ namespace Hospital_Management_MVC.Models
                 throw new Exception(ex.Message);
             }
         }
+        public List<string> GetBookedSlots(int doctorid,DateTime date)
+        {
+            SqlCommand cmd = new SqlCommand("getbookedslots", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@id", doctorid);
+            cmd.Parameters.AddWithValue("@date",date.ToString("yyyy-MM-dd"));
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            List<string> bookedSlots = new List<string>();
 
-
-
-
-
+            while(dr.Read())
+            {
+                bookedSlots.Add(dr["TimeSlot"].ToString());
+            }
+            con.Close();
+            return bookedSlots;
+        }
     }
 }

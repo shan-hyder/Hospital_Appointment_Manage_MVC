@@ -2,28 +2,70 @@
 
 @{
 	ViewData["Title"] = "Appointment Admin";
+	List<string> allSlots = new List<string> { "9.00 AM", "10.00 AM", "11.00 AM", "12.00 PM", "1.00 PM", "2.00 PM", "3.00 PM", "4.00 PM" };
+	List<string> bookedSlots = Model.BookedSlots as List<string> ?? new List<string>();
 }
 <div>
 	<h2 class="text-center">Welcome @ViewBag.name</h2>
+	<h3 class="text-danger">@ViewBag.message</h3>
 </div>
 
-<form asp-action="AppointmentAdmin" method="post">
-	<div>
-		<label>Select Patient</label>
-		<select asp-for="selectedPatintid" asp-items="@(new SelectList(Model.Patients, "Id", "Name"))"></select>
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+<!-- First Form - Select Doctor, Patient, Date -->
+<form asp-action="BookedSlots" method="post">
+	<div class="container-fluid d-flex flex-column justify-content-center">
+		<div class="text-center">
+			<label for="selectedPatientid">Select Patient</label>
+			<select asp-for="selectedPatintid" asp-items="@(new SelectList(Model.Patients, "id", "Name"))"></select>
+		</div>
+		<div class="text-center">
+			<label for="selectedDocterid">Select Doctor</label>
+			<select asp-for="selectedDocterid" asp-items="@(new SelectList(Model.Docters, "Id", "Name"))"></select>
+		</div>
+		<div class="text-center">
+			<label for="Date">Select the date of appointment</label>
+			<input asp-for="Date" type="date" class="form-control" />
+		</div>
+		<div>
+			<input type="submit" class="btn btn-warning text-center" value="View Available Slots" />
+		</div>
+		
 	</div>
-	<div>
-		<label>Select Doctor</label>
-		<select asp-for="selectedDocterid" asp-items="@(new SelectList(Model.Docters,"Id","Name"))"></select>
-	</div>
-	<div>
-		<label>
-			Select the date of appointment
-		</label>
-		<input asp-for="Date" type="date" class="form-control" />
-	</div>
-	
 </form>
 
+<br />
 
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+<!-- Second Form - Book Slot -->
+<form asp-action="AppointmentAdmin" method="post">
+	<input type="hidden" asp-for="selectedDocterid" id="hidden-selectedDocterid" />
+	<input type="hidden" asp-for="selectedPatintid" id="hidden-selectedPatintid" />
+	<input type="hidden" asp-for="Date" id="hidden-Date" />
+
+
+	@if (ViewBag.doctorid != null && ViewBag.date != null)
+	{
+		<label for="Timeslot">Select From Available Slots</label>
+		<select asp-for="Timeslot" class="form-control">
+			@foreach (var slot in allSlots)
+			{
+				if (bookedSlots.Contains(slot))
+				{
+					<option disabled>@slot - Booked</option>
+				}
+				else
+				{
+					<option value="@slot">@slot</option>
+				}
+			}
+		</select>
+		<br />
+		<input type="submit" class="btn btn-success" value="Book Appointment" />
+	}
+</form>
+
+@if (TempData["message"] != null)
+{
+    <div class="alert alert-danger">@TempData["message"]</div>
+}
 
