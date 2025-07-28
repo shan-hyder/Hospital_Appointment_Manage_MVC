@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Hospital_Management_MVC.Models.DoctorRetrieveDTO>  
+@{  
+    ViewData["Title"] = "Manage Doctor";  
+	ViewBag.message = TempData["message"];
+}  
+
+
+@if (ViewBag.message != null)
+{
+    <div class="alert alert-info alert-dismissible fade show text-center" role="alert">
+        @ViewBag.message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<div class="text-center text-success">  
+    <h2>All Doctors</h2>  
+</div>  
+
+<div>  
+    <table class="table table-bordered bg-black text-white">  
+        <thead>  
+            <tr>  
+                <th>DoctorId</th>  
+                <th>UserId</th>  
+                <th>Name</th>  
+                <th>Experience</th>  
+                <th>Availability</th>  
+                <th>Specialization</th>  
+                <th></th>  
+                <th></th>  
+            </tr>  
+        </thead>  
+        <tbody>  
+            @foreach (var item in Model)  
+            {  
+                <tr>  
+                    <td>@item.Id</td>  
+                    <td>@item.Userid</td>  
+                    <td>@item.Name</td>  
+                    <td>@item.Experience</td>  
+                    <td>@item.Availability</td>  
+                    <td>@item.Specialization</td>
+                    <td>
+                        <a class="btn btn-warning" asp-action="UpdateDoctor" asp-route-id="@item.Id">Edit</a>
+                    </td>
+                    <td>
+                        <form asp-action="DeleteDoctor" asp-route-id="@item.Userid" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>  
+            }
+        </tbody>  
+    </table>  
+</div>
+<div class="text-center">
+    <h2>
+        <a class="btn btn-warning" asp-action="AddDoctor" asp-controller="AdminHome">Add Doctor</a>
+    </h2>
+</div>

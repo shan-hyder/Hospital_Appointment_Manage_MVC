@@ -16,6 +16,8 @@ namespace Hospital_Management_MVC.Models
         [DataType(DataType.Password)]
 
         public string Password { get; set; }
+
+        public string User_Role { get; set; }
         public string Message { get; set; }
     }
 }

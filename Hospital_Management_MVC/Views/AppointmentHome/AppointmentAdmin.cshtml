@@ -14,14 +14,45 @@
 <!-- First Form - Select Doctor, Patient, Date -->
 <form asp-action="BookedSlots" method="post">
 	<div class="container-fluid d-flex flex-column justify-content-center">
-		<div class="text-center">
-			<label for="selectedPatientid">Select Patient</label>
-			<select asp-for="selectedPatintid" asp-items="@(new SelectList(Model.Patients, "id", "Name"))"></select>
+		<div>
+			<label for="selectedPatientid">Choose The Patient</label>
+		     <div class="row justify-content-center">
+			 @foreach(var patient in Model.Patients)
+				{
+					<div class="col-md-3 mb-4">
+					<div class="card patient-card"onclick="selectPatient(@patient.id,this)">
+				    <div class="card-body text-center">
+								<h5 class="card-title">@patient.Name</h5>
+								<p class="card-text text-muted">@patient.Age</p>
+								<p class="card-text text-muted">@patient.Gender</p>
+								<p class="card-text text-muted">@patient.Medicalhistory</p>
+					</div>
+					</div>
+					</div>
+				}
+
+			 </div>
+			 </div>
+			<input type="hidden" id="selectedPatintid" name="selectedPatintid" />
 		</div>
-		<div class="text-center">
-			<label for="selectedDocterid">Select Doctor</label>
-			<select asp-for="selectedDocterid" asp-items="@(new SelectList(Model.Docters, "Id", "Name"))"></select>
+		<div>
+		<label for="selectedDoctorid">Choose The Doctor</label>
+		
+			<div class="row justify-content-center">
+				@foreach (var doctor in Model.Docters)
+				{
+					<div class="col-md-3 mb-4">
+						<div class="card doctor-card" onclick="selectDoctor(@doctor.Id, this)">
+							<div class="card-body text-center">
+								<h5 class="card-title">@doctor.Name</h5>
+								<p class="card-text text-muted">@doctor.Specialization</p>
+							</div>
+						</div>
+					</div>
+				}
+			</div>
 		</div>
+		<input type="hidden" id="selectedDocterid" name="selectedDocterid" />
 		<div class="text-center">
 			<label for="Date">Select the date of appointment</label>
 			<input asp-for="Date" type="date" class="form-control" />
@@ -29,8 +60,6 @@
 		<div>
 			<input type="submit" class="btn btn-warning text-center" value="View Available Slots" />
 		</div>
-		
-	</div>
 </form>
 
 <br />
@@ -38,9 +67,10 @@
 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 <!-- Second Form - Book Slot -->
 <form asp-action="AppointmentAdmin" method="post">
-	<input type="hidden" asp-for="selectedDocterid" id="hidden-selectedDocterid" />
-	<input type="hidden" asp-for="selectedPatintid" id="hidden-selectedPatintid" />
-	<input type="hidden" asp-for="Date" id="hidden-Date" />
+	<input type="hidden" name="selectedDocterid" value="@Model.selectedDocterid" />
+	<input type="hidden" name="selectedPatintid" value="@Model.selectedPatintid" />
+	<input type="hidden" name="Date" value="@Model.Date.ToString("yyyy-MM-dd")" />
+
 
 
 	@if (ViewBag.doctorid != null && ViewBag.date != null)
@@ -68,4 +98,32 @@
 {
     <div class="alert alert-danger">@TempData["message"]</div>
 }
+<script>
+	function selectPatient(id, element) {
+    document.getElementById('selectedPatintid').value = id;
+    document.querySelectorAll('.patient-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    element.classList.add('selected');
+}
+function selectDoctor(id, element) {
+    document.getElementById('selectedDocterid').value = id;
+    document.querySelectorAll('.doctor-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    element.classList.add('selected');
+}
+</script>
+<style>
+	.patient-card, .doctor-card {
+		cursor: pointer;
+		border: 2px solid transparent;
+		transition: border-color 0.3s;
+	}
+
+		.patient-card.selected, .doctor-card.selected {
+			border-color: #28a745;
+			box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
+		}
+</style>
 

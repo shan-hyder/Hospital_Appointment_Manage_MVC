@@ -1,0 +1,31 @@
+﻿@model Hospital_Management_MVC.Models.DoctorbyidDTO
+
+<div class="text-center text-info">
+	<h2>Update Doctor</h2>
+</div>
+
+<form asp-action="UpdateDoctor" method="post">
+
+	<input type="hidden" name="Id" value="@Model.Id" />
+
+<div>
+		<label for="Name">Name:</label>
+	<input type="text" id="Name" class="form-control" name="Name" value="@Model.Name" />
+</div>
+<div>
+	<label for="Experience">Experience:</label>
+	<input type="text" class="form-control" id="Experience" name="Experience" value="@Model.Experience" />
+</div>
+<div>
+	<label for="Availability">Availability:</label>
+	<input type="text"class="form-control" id="Availability" name="Availability" value="@Model.Availability" />
+</div>
+<div>
+	<label for="Specialization">Specialization:</label>
+	<input type="text" class="form-control" id="Specialization" name="Specialization" value="@Model.Specialization" />
+</div>
+
+<div class="text-center">
+	<button class="btn btn-warning text-black">Save Changes</button>
+</div>
+</form>

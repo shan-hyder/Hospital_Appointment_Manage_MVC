@@ -1,0 +1,99 @@
+﻿@model Hospital_Management_MVC.Models.AdminApntView
+
+
+
+
+
+@{
+	ViewData["Title"] = "Appointment Doctor";
+	List<string> allSlots = new List<string> { "9.00 AM", "10.00 AM", "11.00 AM", "12.00 PM", "1.00 PM", "2.00 PM", "3.00 PM", "4.00 PM" };
+	List<string> bookedSlots = Model.BookedSlots as List<string> ?? new List<string>();
+}
+<div>
+	<h1 class="text-center text-info">Welcome @ViewBag.name</h1>
+</div>
+
+
+
+<form asp-action="AppointmentDoctor" asp-controller="AppointmentHome">
+
+	<div>
+
+		<H2 class="text-center text-danger">Please choose the Patient</H2>
+
+		<div class="container-fluid d-flex flex-column justify-content-center">
+			<div>
+				<label for="selectedPatientid">Choose The Patient</label>
+				<div class="row justify-content-center">
+					@foreach (var patient in Model.Patients)
+					{
+						<div class="col-md-3 mb-4">
+							<div class="card patient-card" onclick="selectPatient(@patient.id,this)">
+								<div class="card-body text-center">
+									<h5 class="card-title">@patient.Name</h5>
+									<p class="card-text text-muted">@patient.Age</p>
+									<p class="card-text text-muted">@patient.Gender</p>
+									<p class="card-text text-muted">@patient.Medicalhistory</p>
+								</div>
+							</div>
+						</div>
+					}
+				</div>
+			</div>
+			<input type="hidden" id="selectedPatintid" name="selectedPatintid" />
+		</div>
+		<div class="text-center">
+			<label for="Date">Select the date of appointment</label>
+			<input asp-for="Date" type="date" class="form-control" />
+		</div>
+		<div>
+			<button type="submit" name="action" value="View Slots" class="btn btn-warning">View Available Slots</button>
+			@if (ViewBag.date != null)
+			{
+				<label for="Timeslot">Select From Available Slots</label>
+				<select asp-for="Timeslot" class="form-control">
+					@foreach (var slot in allSlots)
+					{
+						if (bookedSlots.Contains(slot))
+						{
+							<option disabled>@slot - Booked</option>
+						}
+						else
+						{
+							<option value="@slot">@slot</option>
+						}
+					}
+				</select>
+				<br />
+				<button type="submit" value="Book Appointment" name="action" class="btn btn-success">Book Appointment</button>
+			}
+		</div>
+	</div>
+
+</form>
+
+<div>
+<h3>
+ <a href="@Url.Action("RegisterPatientload", "RegisterPatient")" class="btn btn-primary">Add Patient</a>
+</h3>
+</div>
+
+
+
+<script>
+		function selectPatient(id, element) {
+		document.getElementById('selectedPatintid').value = id;
+		document.querySelectorAll('.patient-card').forEach(card => {
+			card.classList.remove('selected');
+		});
+		element.classList.add('selected');
+	}
+</script>
+<style>
+	.patient-card.selected, .doctor-card.selected {
+		border-color: #28a745;
+		box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
+	}
+</style>
+
+

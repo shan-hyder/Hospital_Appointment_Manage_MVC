@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace Hospital_Management_MVC.Models
@@ -13,9 +14,10 @@ namespace Hospital_Management_MVC.Models
             {
                 SqlCommand cmd = new SqlCommand("Userregister", con);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@Email", userobject.Email);
-                cmd.Parameters.AddWithValue("@Username", userobject.Username);
-                cmd.Parameters.AddWithValue("@Password", userobject.Password);
+                cmd.Parameters.AddWithValue("@email", userobject.Email);
+                cmd.Parameters.AddWithValue("@username", userobject.Username);
+                cmd.Parameters.AddWithValue("@password", userobject.Password);
+                cmd.Parameters.AddWithValue("@role", userobject.User_Role);
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
@@ -155,6 +157,46 @@ namespace Hospital_Management_MVC.Models
                 }
             }
             catch(Exception ex)
+            {
+                throw new Exception("Error retrieving doctor information: " + ex.Message);
+            }
+        }
+        public DoctorbyidDTO GetDoctorById(int id)
+        {
+            try
+            {
+                SqlCommand cmd = new SqlCommand("getdoctorbyid", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+                con.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+
+                DoctorbyidDTO docter = null;
+
+                if (dr.Read())
+                {
+                    docter = new DoctorbyidDTO
+                    {
+                        Id = Convert.ToInt32(dr["Id"]),
+                        Userid = Convert.ToInt32(dr["Userid"]),
+                        Name = dr["Name"].ToString(),
+                        Experience = dr["Experience"].ToString(),
+                        Availability = dr["Availability"].ToString(),
+                        Specialization = dr["Specialization"].ToString()
+                    };
+                    con.Close();
+                    return docter;
+                }
+                else
+                {
+                    if (con.State == ConnectionState.Open)
+                    {
+                        con.Close();
+                    }
+                    return docter;
+                }
+            }
+            catch (Exception ex)
             {
                 throw new Exception("Error retrieving doctor information: " + ex.Message);
             }
@@ -302,6 +344,51 @@ namespace Hospital_Management_MVC.Models
             }
             con.Close();
             return bookedSlots;
+        }
+        public string UpdateDoctor(DoctorbyidDTO docter)
+        {
+            SqlCommand cmd = new SqlCommand("updatedoctor", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@id", docter.Id);
+            cmd.Parameters.AddWithValue("@name", docter.Name);
+            cmd.Parameters.AddWithValue("@experience", docter.Experience);
+            cmd.Parameters.AddWithValue("@availability", docter.Availability);
+            cmd.Parameters.AddWithValue("@specialization", docter.Specialization);
+            con.Open();
+            int i= cmd.ExecuteNonQuery();
+            if (i == 1)
+            {
+                return "successfully updated";
+            }
+            else
+            {
+                return "Updation failed";
+            }
+
+        }
+        public string DeleteDoctor(int id)
+        {
+            try
+            {
+                SqlCommand cmd = new SqlCommand("deleteuser", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+                con.Open();
+                int i = cmd.ExecuteNonQuery();
+                con.Close();
+                if (i == 1)
+                {
+                    return "Doctor deleted successfully";
+                }
+                else
+                {
+                    return "Doctor deletion failed";
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Error deleting doctor: " + ex.Message;
+            }
         }
     }
 }

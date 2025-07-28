@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Hospital_Management_MVC.Models;
+﻿using Hospital_Management_MVC.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hospital_Management_MVC.Controllers
 {
@@ -76,19 +77,67 @@ namespace Hospital_Management_MVC.Controllers
                 DateTime date = apntmnt.Date;
                 int doctorId = apntmnt.selectedDocterid;
                 var bookedSlots = dbconect.GetBookedSlots(doctorId,date);
-
                 ViewBag.doctorid = doctorId;
                 ViewBag.date = date;
                 apntmnt.Docters = dbconect.GetAllDoctors();
                 apntmnt.Patients = dbconect.GetAllPatients();
                 apntmnt.BookedSlots = bookedSlots;
                 ViewBag.patientid= apntmnt.selectedPatintid;
-
                 return View("AppointmentAdmin",apntmnt);
             }
             TempData["message"] = "please choose doctor and patient to see available slots";
             return RedirectToAction("AppointmentAdmin");
-
         }
+        [HttpGet]
+        public IActionResult AppointmentDoctor()
+        {
+            int doctorId = (int)HttpContext.Session.GetInt32("Userid");
+            DoctorRetrieveDTO doctor= dbconect.GetDoctor(doctorId);
+            ViewBag.name = doctor.Name;
+            var model = new DoctorAppointmentView
+            {
+                Patients=dbconect.GetAllPatients(),
+                BookedSlots=new List<string>(),
+                selectedDocterid= doctorId,
+
+            };
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult AppointmentDoctor(DoctorAppointmentView model,string action)
+        {
+            if(action=="View Slots")
+            {
+
+                var bookedSlots = dbconect.GetBookedSlots(model.selectedDocterid,model.Date);
+                model.BookedSlots = bookedSlots;
+                model.Patients = dbconect.GetAllPatients();
+                DoctorRetrieveDTO doctor= dbconect.GetDoctor(model.selectedDocterid);
+                ViewBag.name = doctor.Name;
+                return View(model);
+
+            }
+            if(action=="Book Appointment")
+            {
+                var addapp = new addAppointment
+                {
+                    PatientId = model.selectedPatintid,
+                    DoctorId = model.selectedDocterid,
+                    Date = model.Date,
+                    TimeSlot = model.Timeslot,
+                    Status = "Pending"
+                };
+                dbconect.AddAppointment(addapp);
+                TempData["message"] = "Appointment Added Successfully";
+                ModelState.Clear();
+                model = new DoctorAppointmentView();
+                model.Patients = dbconect.GetAllPatients();
+                model.BookedSlots = new List<string>();
+                return View(model);
+            }
+            TempData["message"] = "Invalid action";
+            return RedirectToAction("AppointmentDoctor");
+        } 
+            
     }
 }
