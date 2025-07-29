@@ -12,6 +12,8 @@
 
 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 <!-- First Form - Select Doctor, Patient, Date -->
+
+<div style="background-image:url(https://t3.ftcdn.net/jpg/04/96/80/34/360_F_496803433_TeCu85tBSH36XkKklQ4Eu6Zc5EbZQgs5.jpg);height:max-content">
 <form asp-action="BookedSlots" method="post">
 	<div class="container-fluid d-flex flex-column justify-content-center">
 		<div>
@@ -94,6 +96,57 @@
 	}
 </form>
 
+<hr />
+<h3 class="text-center text-primary">All Appointments</h3>
+
+<table class="table table-bordered table-striped">
+	<thead class="table-dark">
+		<tr>
+			<th>Patient</th>
+			<th>Doctor</th>
+			<th>Date</th>
+			<th>Time Slot</th>
+			<th>Status</th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		@if (Model.AllAppointments != null && Model.AllAppointments.Count > 0)
+		{
+			foreach (var appt in Model.AllAppointments)
+			{
+				<tr>
+					<td>@appt.PatientName</td>
+					<td>@appt.DoctorName</td>
+					<td>@appt.Date.ToShortDateString()</td>
+					<td>@appt.Timeslot</td>
+					<td>@appt.Status</td>
+					<td>
+						<form asp-action="DeleteAppointment" method="post">
+							<input type="hidden" name="id" value="@appt.AppointmentId" />
+							<button type="submit" class="btn btn-sm btn-danger">Delete/Cancel</button>
+						</form>
+					</td>
+					<td>
+						<form asp-action="UpdateAppointment" method="post">
+							<input type="hidden" name="id" value="@appt.AppointmentId" />
+							<button type="submit" class="btn btn-sm btn-warning">Complete</button>
+						</form>
+					</td>
+
+				</tr>
+			}
+		}
+		else
+		{
+			<tr><td colspan="6" class="text-center text-muted">No appointments found.</td></tr>
+		}
+	</tbody>
+</table>
+
+</div>
+
 @if (TempData["message"] != null)
 {
     <div class="alert alert-danger">@TempData["message"]</div>
@@ -117,12 +170,13 @@ function selectDoctor(id, element) {
 <style>
 	.patient-card, .doctor-card {
 		cursor: pointer;
-		border: 2px solid transparent;
+		border: 2px solid double;
 		transition: border-color 0.3s;
 	}
 
 		.patient-card.selected, .doctor-card.selected {
 			border-color: #28a745;
+			background-color:thistle;
 			box-shadow: 0 0 10px rgba(40, 167, 69, 0.4);
 		}
 </style>

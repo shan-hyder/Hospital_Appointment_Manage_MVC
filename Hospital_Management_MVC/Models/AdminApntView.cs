@@ -17,5 +17,7 @@ namespace Hospital_Management_MVC.Models
         public string Status { get; set; }
         public List<string> BookedSlots { get; set; } = new List<string>();
 
+        public List<AppointmentDTO> AllAppointments { get; set; } = new List<AppointmentDTO>();
+
     }
 }

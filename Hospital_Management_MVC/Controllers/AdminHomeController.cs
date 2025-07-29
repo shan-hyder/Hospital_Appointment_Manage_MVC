@@ -36,7 +36,8 @@ namespace Hospital_Management_MVC.Controllers
                 if (docters == null || docters.Count == 0)
                 {
                     TempData["message"] = "No Docters Added Yet";
-                    return RedirectToAction("Adminload");
+
+                    return View(docters);
                 }
                 else
                 {
@@ -114,6 +115,7 @@ namespace Hospital_Management_MVC.Controllers
                     string msg1 = con.RegisterDocter(doctor);
                     ViewBag.message = msg1;
                     ModelState.Clear();
+                    TempData["message"] = msg1;
                     return RedirectToAction("ManageDoctor");
                 }
                 else

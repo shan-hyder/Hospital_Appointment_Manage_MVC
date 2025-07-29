@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations;
 
 namespace Hospital_Management_MVC.Models
 {
     public class DocterRegister
     {
+        public int Id { get; set; }
         public int Userid { get; set; }
         [Required(ErrorMessage = "Email is not in the correct format")]
         [EmailAddress]
@@ -15,9 +17,9 @@ namespace Hospital_Management_MVC.Models
         [DataType(DataType.Password)]
 
         public string Password { get; set; }
-
-        public string User_Role { get; set; }
-        public int Id { get; set; }
+        [BindNever]
+        public string? User_Role { get; set; }
+       
         [Required(ErrorMessage ="Must Enter the name")]
         public string Name { get; set; }
         [Required(ErrorMessage ="Please Add Experience")]
@@ -26,6 +28,7 @@ namespace Hospital_Management_MVC.Models
         public string Availability { get; set; }
         [Required(ErrorMessage ="Please Add Specialization")]
         public string Specialization { get; set; }
-        public string Message { get; set; }
+        [BindNever]
+        public string? Message { get; set; }
     }
 }

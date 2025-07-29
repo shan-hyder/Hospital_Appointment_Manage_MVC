@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
+using System.Reflection.PortableExecutable;
 
 namespace Hospital_Management_MVC.Models
 {
@@ -23,7 +24,7 @@ namespace Hospital_Management_MVC.Models
                 con.Close();
                 return "User Inserted Successfully";
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return "User Insertion Failed : " + ex.Message;
             }
@@ -35,9 +36,10 @@ namespace Hospital_Management_MVC.Models
             {
                 SqlCommand cmd = new SqlCommand("Docterregister", con);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@id", docterobject.Id);
+                cmd.Parameters.AddWithValue("@userid", docterobject.Userid);
                 cmd.Parameters.AddWithValue("@name", docterobject.Name);
                 cmd.Parameters.AddWithValue("@experience", docterobject.Experience);
+                cmd.Parameters.AddWithValue("@availability", docterobject.Availability);
                 cmd.Parameters.AddWithValue("@specialization", docterobject.Specialization);
                 con.Open();
                 cmd.ExecuteNonQuery();
@@ -48,7 +50,7 @@ namespace Hospital_Management_MVC.Models
             {
                 return "Docter registration failed" + ex.Message;
             }
-            
+
         }
         public string RegisterPatient(PatientRegister patientobject)
         {
@@ -72,25 +74,25 @@ namespace Hospital_Management_MVC.Models
                 return "Patient registration failed: " + ex.Message;
             }
         }
-        public int logincheck(string uname,string password)
+        public int logincheck(string uname, string password)
         {
             try
             {
                 SqlCommand cmd = new SqlCommand("logincout", con);
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@username",uname);
+                cmd.Parameters.AddWithValue("@username", uname);
                 cmd.Parameters.AddWithValue("@password", password);
                 con.Open();
-                int count=Convert.ToInt32(cmd.ExecuteScalar());
+                int count = Convert.ToInt32(cmd.ExecuteScalar());
                 con.Close();
                 return count;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Login check failed: " + ex.Message);
             }
         }
-        public userRetrieveDTO Getuserinfo(string uname,string pswd)
+        public userRetrieveDTO Getuserinfo(string uname, string pswd)
         {
             userRetrieveDTO users = null;
             SqlCommand cmd = new SqlCommand("getuser", con);
@@ -98,10 +100,10 @@ namespace Hospital_Management_MVC.Models
             cmd.Parameters.AddWithValue("@username", uname);
             cmd.Parameters.AddWithValue("@password", pswd);
             con.Open();
-            SqlDataReader dr= cmd.ExecuteReader();
-            if(dr.Read())
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
             {
-                 users = new userRetrieveDTO
+                users = new userRetrieveDTO
                 {
                     Userid = Convert.ToInt32(dr["Userid"]),
                     Email = dr["Email"].ToString(),
@@ -119,7 +121,7 @@ namespace Hospital_Management_MVC.Models
                 throw (new Exception("Invalid user went wrong"));
             }
 
-           
+
         }
         public DoctorRetrieveDTO GetDoctor(int id)
         {
@@ -156,7 +158,7 @@ namespace Hospital_Management_MVC.Models
                     return docter;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Error retrieving doctor information: " + ex.Message);
             }
@@ -246,9 +248,9 @@ namespace Hospital_Management_MVC.Models
                 cmd.Parameters.AddWithValue("time", obj.TimeSlot);
                 cmd.Parameters.AddWithValue("status", obj.Status);
                 con.Open();
-                 int i = cmd.ExecuteNonQuery();
+                int i = cmd.ExecuteNonQuery();
                 con.Close();
-                if(i==1)
+                if (i == 1)
                 {
                     return "Added successfully";
                 }
@@ -256,9 +258,9 @@ namespace Hospital_Management_MVC.Models
                 {
                     return "Failed to book appointment";
                 }
-                
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.Message;
             }
@@ -304,9 +306,9 @@ namespace Hospital_Management_MVC.Models
                 cmd.CommandType = CommandType.StoredProcedure;
                 con.Open();
                 SqlDataReader dr = cmd.ExecuteReader();
-               
 
-                while(dr.Read())
+
+                while (dr.Read())
                 {
                     patients.Add(new PatientRetreiveDTO()
                     {
@@ -318,27 +320,27 @@ namespace Hospital_Management_MVC.Models
                         Medicalhistory = dr["Medicalhistory"].ToString()
 
                     });
-      
+
                 }
                 con.Close();
                 return patients;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
         }
-        public List<string> GetBookedSlots(int doctorid,DateTime date)
+        public List<string> GetBookedSlots(int doctorid, DateTime date)
         {
             SqlCommand cmd = new SqlCommand("getbookedslots", con);
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@id", doctorid);
-            cmd.Parameters.AddWithValue("@date",date.ToString("yyyy-MM-dd"));
+            cmd.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd"));
             con.Open();
             SqlDataReader dr = cmd.ExecuteReader();
             List<string> bookedSlots = new List<string>();
 
-            while(dr.Read())
+            while (dr.Read())
             {
                 bookedSlots.Add(dr["TimeSlot"].ToString());
             }
@@ -355,7 +357,7 @@ namespace Hospital_Management_MVC.Models
             cmd.Parameters.AddWithValue("@availability", docter.Availability);
             cmd.Parameters.AddWithValue("@specialization", docter.Specialization);
             con.Open();
-            int i= cmd.ExecuteNonQuery();
+            int i = cmd.ExecuteNonQuery();
             if (i == 1)
             {
                 return "successfully updated";
@@ -370,13 +372,30 @@ namespace Hospital_Management_MVC.Models
         {
             try
             {
+                SqlCommand cm = new SqlCommand("checkappointment", con);
+                cm.CommandType = CommandType.StoredProcedure;
+                cm.Parameters.AddWithValue("@id", id);
+                con.Open();
+                int i = cm.ExecuteNonQuery();
+                con.Close();
+                if (i > 0)
+                {
+                    SqlCommand cm1 = new SqlCommand("deleteappointmentdocter", con);
+                    cm1.CommandType = CommandType.StoredProcedure;
+                    cm1.Parameters.AddWithValue("@doctorid", id);
+                    con.Open();
+                    cm1.ExecuteNonQuery();
+                    con.Close();
+                }
+
+
                 SqlCommand cmd = new SqlCommand("deleteuser", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@id", id);
                 con.Open();
-                int i = cmd.ExecuteNonQuery();
+                int j = cmd.ExecuteNonQuery();
                 con.Close();
-                if (i == 1)
+                if (j == 1)
                 {
                     return "Doctor deleted successfully";
                 }
@@ -388,6 +407,73 @@ namespace Hospital_Management_MVC.Models
             catch (Exception ex)
             {
                 return "Error deleting doctor: " + ex.Message;
+            }
+        }
+        public List<AppointmentDTO> GetAllAppointments()
+        {
+            List<AppointmentDTO> appointments = new List<AppointmentDTO>();
+
+            SqlCommand cmd = new SqlCommand("getallappointments", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                AppointmentDTO dto = new AppointmentDTO
+                {
+                    AppointmentId = Convert.ToInt32(dr["AppointmentId"]),
+                    PatientName = dr["PatientName"].ToString(),
+                    DoctorName = dr["DoctorName"].ToString(),
+                    Date = Convert.ToDateTime(dr["BookDate"]),
+                    Timeslot = dr["TimeSlot"].ToString(),
+                    Status = dr["Status"].ToString()
+                };
+                appointments.Add(dto);
+
+            }
+            con.Close();
+            return appointments;
+
+        }
+        public string deleteappointment(int id)
+        {
+            SqlCommand cmd = new SqlCommand("deleteappointment", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@id", id);
+            con.Open();
+            int i = cmd.ExecuteNonQuery();
+            con.Close();
+            if (i>0)
+            {
+                return "Successfully Deleted";
+                
+            }
+            return "deletion Failed";
+
+
+        }
+        public string UpdateAppointmentStatus(int id)
+        {
+            try
+            {
+                SqlCommand cmd = new SqlCommand("updateappointmentstatusadmin", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+                con.Open();
+                int i = cmd.ExecuteNonQuery();
+                con.Close();
+                if (i > 0)
+                {
+                    return "Status updated successfully";
+                }
+                else
+                {
+                    return "Status update failed";
+                }
+            }
+            catch (Exception ex)
+            {
+                return "Error updating status: " + ex.Message;
             }
         }
     }

@@ -38,6 +38,7 @@ namespace Hospital_Management_MVC.Controllers
             {
                 Docters = dbconect.GetAllDoctors(),
                 Patients = dbconect.GetAllPatients(),
+                AllAppointments =dbconect.GetAllAppointments(),
                 BookedSlots = new List<string>()
             };
             if (TempData["message"]!=null)
@@ -67,6 +68,7 @@ namespace Hospital_Management_MVC.Controllers
             apntview.Docters = dbconect.GetAllDoctors();
             apntview.Patients = dbconect.GetAllPatients();
             apntview.BookedSlots = new List<string>();
+            apntview.AllAppointments = dbconect.GetAllAppointments();
             return View(apntview);
         }
         [HttpPost]
@@ -137,7 +139,35 @@ namespace Hospital_Management_MVC.Controllers
             }
             TempData["message"] = "Invalid action";
             return RedirectToAction("AppointmentDoctor");
-        } 
-            
+        }
+        [HttpPost]
+        public IActionResult DeleteAppointment(int id)
+        {
+            if(id!=0)
+            {
+                string s = dbconect.deleteappointment(id);
+                TempData["message"] = s;
+                return RedirectToAction("AppointmentAdmin");
+            }
+            TempData["message"] = "deletion failed";
+            return RedirectToAction("AppointmentAdmin");
+
+        }
+        [HttpPost]
+        public IActionResult UpdateAppointment(int id)
+        {
+            if(id!=0)
+            {
+                string s = dbconect.UpdateAppointmentStatus(id);
+                TempData["message"] = s;
+                return RedirectToAction("AppointmentAdmin");
+            }
+            TempData["message"] = "Update failed";
+            return RedirectToAction("AppointmentAdmin");
+
+
+        }
+
     }
+    
 }

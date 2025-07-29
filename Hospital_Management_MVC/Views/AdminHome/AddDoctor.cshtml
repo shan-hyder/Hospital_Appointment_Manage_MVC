@@ -1,7 +1,17 @@
 ﻿@model Hospital_Management_MVC.Models.DocterRegister
 @{
 	ViewData["Title"] = "Add Doctor";
+	ViewBag.message = TempData["message"];
 }
+@if(ViewBag.message!=null)
+{
+	<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+		@ViewBag.message
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+}
+
+
 <div class="text-center">
 	<h2 class="text-black">Doctor Registration Form</h2>
 </div>
@@ -9,6 +19,7 @@
 
 	<div class="w-75 border shadow">
 		<form asp-action="AddDoctor" asp-controller="AdminHome" method="post">
+			<div asp-validation-summary="All" class="text-danger text-center"></div>
 
 			<div class="form-group">
 			<label asp-for="Email">Email</label><br/>
@@ -59,3 +70,6 @@
 	</div>
 </div>
 <partial name="_ValidationScriptsPartial" />
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}
