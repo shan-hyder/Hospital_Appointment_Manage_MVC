@@ -1,0 +1,61 @@
+﻿@model IEnumerable<Hospital_Management_MVC.Models.PatientRetreiveDTO>
+@{
+    ViewData["Title"] = "Manage Patient";
+    ViewBag.message = TempData["message"];
+}
+
+
+@if (ViewBag.message != null)
+{
+    <div class="alert alert-info alert-dismissible fade show text-center" role="alert">
+        @ViewBag.message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<div class="text-center text-success">
+    <h2>All Patients</h2>
+</div>
+
+<div>
+    <table class="table table-bordered bg-black text-white">
+        <thead>
+            <tr>
+                <th>PatientId</th>
+                <th>UserId</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>MedicalHistory</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.id</td>
+                    <td>@item.Userid</td>
+                    <td>@item.Name</td>
+                    <td>@item.Age</td>
+                    <td>@item.Gender</td>
+                    <td>@item.Medicalhistory</td>
+                    <td>
+                        <a class="btn btn-warning" asp-action="UpdatePatient" asp-route-id="@item.Userid">Edit</a>
+                    </td>
+                    <td>
+                        <form asp-action="DeletePatient" asp-route-id="@item.Userid" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="text-center">
+    <h2>
+        <a class="btn btn-warning" asp-action="AddPatient" asp-controller="AdminHome">Add Patient</a>
+    </h2>
+</div>
+

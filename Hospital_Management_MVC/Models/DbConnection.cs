@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Data.SqlClient;
 using System.Reflection.PortableExecutable;
@@ -387,9 +388,7 @@ namespace Hospital_Management_MVC.Models
                     cm1.ExecuteNonQuery();
                     con.Close();
                 }
-
-
-                SqlCommand cmd = new SqlCommand("deleteuser", con);
+                SqlCommand cmd = new SqlCommand("deletedoctor", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@id", id);
                 con.Open();
@@ -397,6 +396,13 @@ namespace Hospital_Management_MVC.Models
                 con.Close();
                 if (j == 1)
                 {
+                    SqlCommand cmd1 = new SqlCommand("deleteuser", con);
+                    cmd1.CommandType = CommandType.StoredProcedure;
+                    cmd1.Parameters.AddWithValue("@id", id);
+                    con.Open();
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+
                     return "Doctor deleted successfully";
                 }
                 else
@@ -443,10 +449,10 @@ namespace Hospital_Management_MVC.Models
             con.Open();
             int i = cmd.ExecuteNonQuery();
             con.Close();
-            if (i>0)
+            if (i > 0)
             {
                 return "Successfully Deleted";
-                
+
             }
             return "deletion Failed";
 
@@ -475,6 +481,82 @@ namespace Hospital_Management_MVC.Models
             {
                 return "Error updating status: " + ex.Message;
             }
+        }
+        public string DeletePatient(int id)
+        {
+            SqlCommand cmd = new SqlCommand("deleteuser", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@id", id);
+            con.Open();
+            int i = cmd.ExecuteNonQuery();
+            con.Close();
+            if (i == 1)
+            {
+                return "Patient deleted successfully";
+            }
+            return "Patient Deletion Failed";
+        }
+        public string UpdatePatient(PatientByIdSTO patient)
+        {
+            SqlCommand cmd = new SqlCommand("updatepatient", con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@id", patient.Id);
+            cmd.Parameters.AddWithValue("@name", patient.Name);
+            cmd.Parameters.AddWithValue("@age", patient.Age);
+            cmd.Parameters.AddWithValue("@DOB", patient.DOB);
+            cmd.Parameters.AddWithValue("@gender", patient.Gender);
+            cmd.Parameters.AddWithValue("@medicalhistory", patient.Medicalhistory);
+            con.Open();
+            int i = cmd.ExecuteNonQuery();
+            if (i == 1)
+            {
+                return "successfully updated";
+            }
+            else
+            {
+                return "Updation failed";
+            }
+
+        }
+        public PatientByIdSTO GetPatientById(int id)
+        {
+            try
+            {
+                SqlCommand cmd = new SqlCommand("getpatient", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+                con.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+                PatientByIdSTO patient = null;
+                if (dr.Read())
+                {
+                    patient = new PatientByIdSTO
+                    {
+                        Id = Convert.ToInt32(dr["Id"]),
+                        Userid = Convert.ToInt32(dr["Userid"]),
+                        Name = dr["Name"].ToString(),
+                        Age = Convert.ToInt32(dr["Age"]),
+                        DOB = Convert.ToDateTime(dr["DOB"]),
+                        Medicalhistory = dr["Medicalhistory"].ToString(),
+                    };
+                    con.Close();
+                    return patient;
+                }
+                else
+                {
+                    if (con.State == ConnectionState.Open)
+                    {
+                        con.Close();
+                    }
+                    return patient;
+                }
+                   
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving patient information: " + ex.Message);
+            }
+         
         }
     }
 }

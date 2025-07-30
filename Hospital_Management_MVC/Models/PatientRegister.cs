@@ -12,9 +12,18 @@ namespace Hospital_Management_MVC.Models
         [Required(ErrorMessage = "Please enter the Age")]
         public int Age { get; set; }
         [Required(ErrorMessage ="Please select date of birth")]
-        public DateOnly DOB { get; set; }
+        public DateTime DOB { get; set; }
         [Required(ErrorMessage = "Please choose the gender")]
         public string Gender { get; set; }
         public string Medicalhistory { get; set; }
+        [Required(ErrorMessage = "Please enter the Email")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address")]
+        public string Email { get; set; }
+        [Required(ErrorMessage = "Please enter the Username")]
+        public string Username { get; set; }
+        [Required(ErrorMessage = "Please enter the Password")]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+        public string User_Role { get; set; } = "PATIENT";
     }
 }

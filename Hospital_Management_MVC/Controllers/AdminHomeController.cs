@@ -153,6 +153,128 @@ namespace Hospital_Management_MVC.Controllers
                 return RedirectToAction("ManageDoctor");
             }
         }
+        [HttpGet]
+        public IActionResult ManagePatient()
+        {
+            if (HttpContext.Session.GetInt32("Userid") != null)
+            {
+                var patients = con.GetAllPatients();
+                if (patients == null || patients.Count == 0)
+                {
+                    TempData["message"] = "No Patients Added Yet";
+
+                    return View(patients);
+                }
+                else
+                {
+                    return View(patients);
+                }
+            }
+            else
+            {
+                TempData["message"] = "Please Login First";
+                return RedirectToAction("Login_load", "Login");
+            }
+        }
+        [HttpPost]
+        public IActionResult DeletePatient(int id)
+        {
+            if (id == 0)
+            {
+                TempData["message"] = "Patient doesn't exist";
+                return RedirectToAction("ManagePatient");
+            }
+            else
+            {
+                TempData["message"] = con.DeletePatient(id);
+                return RedirectToAction("ManagePatient");
+            }
+        }
+        [HttpGet]
+        public IActionResult UpdatePatient(int id)
+        {
+            var patient = con.GetPatientById(id);
+            if (patient == null)
+            {
+                TempData["message"] = "Patient not found";
+                return RedirectToAction("ManagePatient");
+            }
+            ViewBag.userid = id;
+            ViewBag.id = patient.Id;
+            return View(patient);
+        }
+        [HttpPost]
+        public IActionResult UpdatePatient(PatientByIdSTO model)
+        {
+            var patient = new PatientByIdSTO
+            {
+                Id = model.Id,
+                Userid = model.Userid,
+                Name = model.Name,
+                Age = model.Age,
+                DOB = model.DOB,
+                Gender = model.Gender,
+                Medicalhistory = model.Medicalhistory
+
+            };
+            TempData["message"] = con.UpdatePatient(patient);
+
+            return RedirectToAction("ManagePatient");
+        }
+        [HttpGet]
+        public IActionResult AddPatient()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddPatient(PatientRegister patientRegister)
+        {
+            if (ModelState.IsValid)
+            {
+                var model = new userRegister
+                {
+                    Email = patientRegister.Email,
+                    Username = patientRegister.Username,
+                    Password = patientRegister.Password,
+                    User_Role = "PATIENT"
+
+                };
+                string msg = con.createUser(model);
+                if (msg == "User Inserted Successfully")
+                {
+                    userRetrieveDTO user = con.Getuserinfo(patientRegister.Username, patientRegister.Password);
+                    int userid = user.Userid;
+                    patientRegister.Userid = userid;
+                    string msg1 = con.RegisterPatient(patientRegister);
+                    ViewBag.message = msg1;
+                    ModelState.Clear();
+                    TempData["message"] = msg1;
+                    return RedirectToAction("ManagePatient");
+                }
+                else
+                {
+                    TempData["message"] = msg;
+                    return RedirectToAction("ManagePatient");
+
+
+                }
+            }
+            else
+            {
+                TempData["message"] = "Please fill all the fields correctly";
+                foreach (var key in ModelState.Keys)
+                {
+                    var state = ModelState[key];
+                    if (state.Errors.Count > 0)
+                    {
+                        // Log or inspect state.Errors[0].ErrorMessage
+                    }
+                }
+                return View(patientRegister);
+            }
+        }
+
     }
 }
 

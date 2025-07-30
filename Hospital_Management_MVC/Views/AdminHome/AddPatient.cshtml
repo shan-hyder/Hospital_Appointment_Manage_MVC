@@ -1,0 +1,89 @@
+﻿@model Hospital_Management_MVC.Models.PatientRegister
+@{
+	ViewData["Title"] = "Add Patient";
+	ViewBag.message = TempData["message"];
+}
+@if (ViewBag.message != null)
+{
+	<div class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+		@ViewBag.message
+		<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+	</div>
+}
+<div class="text-center">
+	<h2 class="text-black">Patient Registration Form</h2>
+</div>
+<div class="d-flex justify-content-center">
+
+	<div class="w-75 border shadow">
+		<form asp-action="AddPatient" asp-controller="AdminHome" method="post">
+			<div asp-validation-summary="All" class="text-danger text-center"></div>
+
+			<div class="form-group">
+				<label asp-for="Email">Email</label><br />
+				<input asp-for="Email" type="email" class="form-control" />
+				<span asp-validation-for="Email" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Username">Username</label>
+				<input asp-for="Username" type="text" class="form-control" />
+				<span asp-validation-for="Username" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Password">Password</label>
+				<input asp-for="Password" type="password" class="form-control" />
+				<span asp-validation-for="Password" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Name">Name</label>
+				<input asp-for="Name" type="text" class="form-control" />
+				<span asp-validation-for="Name" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Age">Age</label>
+				<input asp-for="Age" type="number" class="form-control" />
+				<span asp-validation-for="Age" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="DOB">DOB</label>
+				<input asp-for="DOB" type="date" class="form-control" />
+				<span asp-validation-for="DOB" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Gender">Gender</label><br />
+
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" asp-for="Gender" value="Male" id="genderMale" />
+					<label class="form-check-label" for="genderMale">Male</label>
+				</div>
+
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" asp-for="Gender" value="Female" id="genderFemale" />
+					<label class="form-check-label" for="genderFemale">Female</label>
+				</div>
+
+				<span asp-validation-for="Gender" class="text-danger"></span>
+			</div>
+
+			<div class="form-group">
+				<label asp-for="Medicalhistory">Medical History</label>
+				<input asp-for="Medicalhistory" type="text" class="form-control" />
+				<span asp-validation-for="Medicalhistory" class="text-danger"></span>
+			</div>
+
+			<div class="text-center mt-3">
+				<button type="submit" class="btn btn-primary">Register Patient</button>
+			</div>
+		</form>
+	</div>
+</div>
+<partial name="_ValidationScriptsPartial" />
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

@@ -11,4 +11,9 @@
 
         public string Medicalhistory { get; set; }
     }
+    public class Patients
+    {
+        public List<PatientRetreiveDTO> AllPatients { get; set; } = new List<PatientRetreiveDTO>();
+    }
+
 }
