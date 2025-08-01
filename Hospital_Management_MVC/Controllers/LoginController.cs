@@ -37,6 +37,10 @@ namespace Hospital_Management_MVC.Controllers
                     }
                     else if (role == "DOCTOR")
                     {
+                        DoctorbyidDTO doctor = conn.GetDoctorByUid(userdetail.Userid);
+                        HttpContext.Session.SetString("Name",doctor.Name);
+                        HttpContext.Session.SetInt32("Doctorid", doctor.Id);
+
                         return RedirectToAction("Doctorload", "DoctorHome");
                     }
                     else if (role == "PATIENT")

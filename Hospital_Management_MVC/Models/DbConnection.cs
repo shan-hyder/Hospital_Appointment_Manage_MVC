@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.SqlServer.Server;
 using System.Data;
 using System.Data.SqlClient;
 using System.Reflection.PortableExecutable;
@@ -169,6 +170,46 @@ namespace Hospital_Management_MVC.Models
             try
             {
                 SqlCommand cmd = new SqlCommand("getdoctorbyid", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+                con.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+
+                DoctorbyidDTO docter = null;
+
+                if (dr.Read())
+                {
+                    docter = new DoctorbyidDTO
+                    {
+                        Id = Convert.ToInt32(dr["Id"]),
+                        Userid = Convert.ToInt32(dr["Userid"]),
+                        Name = dr["Name"].ToString(),
+                        Experience = dr["Experience"].ToString(),
+                        Availability = dr["Availability"].ToString(),
+                        Specialization = dr["Specialization"].ToString()
+                    };
+                    con.Close();
+                    return docter;
+                }
+                else
+                {
+                    if (con.State == ConnectionState.Open)
+                    {
+                        con.Close();
+                    }
+                    return docter;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error retrieving doctor information: " + ex.Message);
+            }
+        }
+        public DoctorbyidDTO GetDoctorByUid(int id)
+        {
+            try
+            {
+                SqlCommand cmd = new SqlCommand("getdoctorbyuid", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@id", id);
                 con.Open();
@@ -557,6 +598,40 @@ namespace Hospital_Management_MVC.Models
                 throw new Exception("Error retrieving patient information: " + ex.Message);
             }
          
+        }
+        public List<DoctorAppointment> GetAppointmentsbydoctor(int id)
+        {
+            try
+            {
+                SqlCommand cmd = new SqlCommand("getappointmentbydoctor", con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id", id);
+                con.Open();
+                List<DoctorAppointment> appointments = new List<DoctorAppointment>();
+                SqlDataReader dr = cmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    appointments.Add(new DoctorAppointment()
+                    {
+                        AppointmentId = Convert.ToInt32(dr["AppointmentId"]),
+                        PatientName = dr["PatientName"].ToString(),
+                        Date = Convert.ToDateTime(dr["BookDate"]), // Fixed conversion to DateTime
+                        Timeslot = dr["TimeSlot"].ToString(),
+                        Status = dr["Status"].ToString()
+                    });
+                }
+                con.Close();
+                return appointments;
+            }
+            catch
+            {
+                if(con.State==ConnectionState.Open)
+                {
+                    con.Close();
+                }
+                throw new Exception("Error retrieving appointments by doctor");
+            }
+            
         }
     }
 }

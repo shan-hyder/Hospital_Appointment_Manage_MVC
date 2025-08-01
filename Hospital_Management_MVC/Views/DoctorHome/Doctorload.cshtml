@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Hospital_Management_MVC.Models.DoctorAppointment>
+@{
+    ViewData["Title"] = "Manage Appointment";
+    ViewBag.message = TempData["message"];
+}
+
+
+
+@if (ViewBag.message != null)
+{
+    <div class="alert alert-info alert-dismissible fade show text-center" role="alert">
+        @ViewBag.message
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="text-center text-danger">Welcome @ViewBag.name</div>
+<div class="text-center text-success">
+    <h2>All Appointments</h2>
+</div>
+
+<div style="background-image:url(https://static.vecteezy.com/system/resources/previews/023/639/130/non_2x/molecular-structure-with-hospital-cross-for-medical-chemistry-and-science-concept-background-illustration-vector.jpg);background-size:auto;min-width:inherit;
+background-position:center;min-height:100vh;padding-top:0px;color:white">
+    <table class="table table-bordered bg-black text-white">
+        <thead>
+            <tr>
+                <th>AppointmentId</th>
+                <th>Patient Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.AppointmentId</td>
+                    <td>@item.PatientName</td>
+                    <td>@item.Date</td>
+                    <td>@item.Timeslot</td>
+                    <td>@item.Status</td>
+                    <td>
+                        <form asp-action="UpdateAppointment" asp-route-id="@item.AppointmentId" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-warning">Finish</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="DeleteAppointment" asp-route-id="@item.AppointmentId" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Delete/Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
